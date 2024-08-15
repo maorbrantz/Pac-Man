@@ -1,8 +1,3 @@
-# main.tf
-provider "aws" {
-  region = var.region
-}
-
 # VPC Configuration
 resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
@@ -125,15 +120,4 @@ resource "aws_docdb_instance" "mongodb_instance" {
   cluster_id       = aws_docdb_cluster.mongodb.id
   instance_class   = "db.r5.large"
   engine           = "docdb"
-}
-
-# Outputs
-output "eks_cluster_endpoint" {
-  description = "The endpoint of the EKS cluster"
-  value       = aws_eks_cluster.cluster.endpoint
-}
-
-output "mongodb_endpoint" {
-  description = "The endpoint of the MongoDB cluster"
-  value       = aws_docdb_cluster.mongodb.endpoint
 }
