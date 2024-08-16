@@ -8,7 +8,7 @@ phases:
   build:
     commands:
       - echo Building the Docker image...
-      - docker build -t pacman_project .
+      - docker build -f Source/docker/Dockerfile -t pacman_project .
       - docker tag pacman_project:latest public.ecr.aws/w9x4f4k1/pacman_project:latest
   post_build:
     commands:
