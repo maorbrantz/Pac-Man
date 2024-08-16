@@ -8,41 +8,176 @@
 #--------------- VPC ---------------
 
 # Create VPC
-resource "aws_vpc" "main" {
+resource "aws_vpc" "VPC" {
   cidr_block = "10.0.0.0/16"
 
   tags = {
-    Name = "pacman-vpc"
+    Name = "PacMan VPC - ${var.Environment}"
   }
 }
 
-# Create Subnet A
-resource "aws_subnet" "subnet_a" {
-  vpc_id     = aws_vpc.main.id
-  cidr_block = "10.0.1.0/24"
-  availability_zone = "us-west-2a"
-
+# Create Internet Gateway and Automatically Attach
+resource "aws_internet_gateway" "IGW" {
+  vpc_id = aws_vpc.VPC.id
   tags = {
-    Name = "pacman-subnet-a"
+    Name = "PacMan IGW"
   }
 }
 
-# Create Subnet B
-resource "aws_subnet" "subnet_b" {
-  vpc_id     = aws_vpc.main.id
-  cidr_block = "10.0.2.0/24"
-  availability_zone = "us-west-2b"
+# Create Public Subnet in AZ's A, B
+resource "aws_subnet" "Public_A" {
+  vpc_id            = aws_vpc.VPC.id
+  cidr_block        = var.Public_A_CIDR
+  availability_zone = "${var.Region}a"
+  # Enable Auto-assigned IPv4
+  map_public_ip_on_launch = true
+  tags = {
+    Name                     = "Public Subnet A - ${var.Environment}"
+    "kubernetes.io/role/elb" = 1
+  }
+}
+
+resource "aws_subnet" "Public_B" {
+  vpc_id            = aws_vpc.VPC.id
+  cidr_block        = var.Public_B_CIDR
+  availability_zone = "${var.Region}b"
+  # Enable Auto-assigned IPv4
+  map_public_ip_on_launch = true
+  tags = {
+    Name                     = "Public Subnet B - ${var.Environment}"
+    "kubernetes.io/role/elb" = 1
+  }
+}
+
+# Create Route Tables for Public Subnet A
+resource "aws_route_table" "Public_RouteTable_A" {
+  vpc_id = aws_vpc.VPC.id
+  route {
+    cidr_block = var.VPC_CIDR
+    gateway_id = "local"
+  }
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.IGW.id
+  }
+  tags = {
+    Name = "Public RouteTable A - ${var.Environment}"
+  }
+}
+
+# Create Route Tables for Public Subnet B
+resource "aws_route_table" "Public_RouteTable_B" {
+  vpc_id = aws_vpc.VPC.id
+  route {
+    cidr_block = var.VPC_CIDR
+    gateway_id = "local"
+  }
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.IGW.id
+  }
+  tags = {
+    Name = "Public RouteTable B - ${var.Environment}"
+  }
+}
+
+# Attach Public Subnets to Route Tables A,B
+resource "aws_route_table_association" "RouteTable_Attach_A" {
+  subnet_id      = aws_subnet.Public_A.id
+  route_table_id = aws_route_table.Public_RouteTable_A.id
+}
+
+resource "aws_route_table_association" "RouteTable_Attach_B" {
+  subnet_id      = aws_subnet.Public_B.id
+  route_table_id = aws_route_table.Public_RouteTable_B.id
+}
+
+# Create 2 Private Subnets in different Availability Zones: A, B
+resource "aws_subnet" "Private_A" {
+  vpc_id            = aws_vpc.VPC.id
+  cidr_block        = var.Private_A_CIDR
+  availability_zone = "${var.Region}a"
 
   tags = {
-    Name = "pacman-subnet-b"
+    Name = "Private Subnet A - ${var.Environment}"
   }
+}
+
+resource "aws_subnet" "Private_B" {
+  vpc_id            = aws_vpc.VPC.id
+  cidr_block        = var.Private_B_CIDR
+  availability_zone = "${var.Region}b"
+
+  tags = {
+    Name = "Private Subnet B - ${var.Environment}"
+  }
+}
+
+# Create Private Route Tabless for Availability zones: A, B
+resource "aws_route_table" "Private_Route_Table_A" {
+  vpc_id = aws_vpc.VPC.id
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.NAT.id
+  }
+  route {
+    cidr_block = var.VPC_CIDR
+    gateway_id = "local"
+  }
+  tags = {
+    Name = "Route Table Private Subnet A - ${var.Environment}"
+  }
+}
+
+resource "aws_route_table" "Private_Route_Table_B" {
+  vpc_id = aws_vpc.VPC.id
+   route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.NAT.id
+  }
+  route {
+    cidr_block = var.VPC_CIDR
+    gateway_id = "local"
+  }
+  tags = {
+    Name = "Route Table Private Subnet B - ${var.Environment}"
+  }
+}
+
+# Elastic IP for NAT
+resource "aws_eip" "NAT_EIP" {
+  domain = "vpc"
+  tags = {
+    Name = "Elastic IP - ${var.Environment}"
+  }
+}
+
+# NAT Gateway (In AZ-A)
+resource "aws_nat_gateway" "NAT" {
+  allocation_id = aws_eip.NAT_EIP.id
+  subnet_id     = aws_subnet.Public_A.id
+  tags = {
+    Name = "NAT Gateway - ${var.Environment}"
+  }
+}
+
+# Attach Private Subnet A to Route Table
+resource "aws_route_table_association" "Route_Table_Private_A" {
+  subnet_id      = aws_subnet.Private_A.id
+  route_table_id = aws_route_table.Private_Route_Table_A.id
+}
+
+# Attach Private Subnet B to Route Table
+resource "aws_route_table_association" "Route_Table_Private_B" {
+  subnet_id      = aws_subnet.Private_B.id
+  route_table_id = aws_route_table.Private_Route_Table_B.id
 }
 
 #---------------EKS---------------
 
 # IAM Role for EKS
-resource "aws_iam_role" "eks_role" {
-  name = "eks-cluster-role"
+resource "aws_iam_role" "EKS_Role" {
+  name = "EKS_Cluster_Role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -59,24 +194,27 @@ resource "aws_iam_role" "eks_role" {
 }
 
 # Add Policy to IAM Role for EKS
-resource "aws_iam_role_policy_attachment" "eks_policy" {
+resource "aws_iam_role_policy_attachment" "EKS_Cluster_Policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
-  role     = aws_iam_role.eks_role.name
+  role     = aws_iam_role.EKS_Role.name
 }
 
-# Cluster Configuration
-resource "aws_eks_cluster" "cluster" {
-  name     = var.cluster_name
-  role_arn  = aws_iam_role.eks_role.arn
-  version   = "1.21"
+# Create EKS Cluster
+resource "aws_eks_cluster" "Cluster" {
+  name     = var.Cluster_Name
+  role_arn  = aws_iam_role.EKS_Role.arn
 
   vpc_config {
-    subnet_ids = [aws_subnet.subnet_a.id, aws_subnet.subnet_b.id]
-  }
+    subnet_ids = [aws_subnet.Public_A.id, aws_subnet.Public_B.id, aws_subnet.Private_A.id, aws_subnet.Private_B.id]
+    }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.EKS_Cluster_Policy
+  ]
 }
 
 # IAM Role for Nodes
-resource "aws_iam_role" "node_role" {
+resource "aws_iam_role" "Node_Role" {
   name = "eks-node-role"
 
   assume_role_policy = jsonencode({
@@ -94,58 +232,76 @@ resource "aws_iam_role" "node_role" {
 }
 
 # Add Policy to IAM Role for Nodes
-resource "aws_iam_role_policy_attachment" "node_role-AmazonEKSWorkerNodePolicy" {
+resource "aws_iam_role_policy_attachment" "Node_Role-AmazonEKSWorkerNodePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-  role     = aws_iam_role.node_role.name
+  role     = aws_iam_role.Node_Role.name
 }
 
-resource "aws_iam_role_policy_attachment" "node_role-AmazonEKSCNIPolicy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSCNIPolicy"
-  role     = aws_iam_role.node_role.name
+resource "aws_iam_role_policy_attachment" "Node_Role-AmazonEKSCNIPolicy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+  role     = aws_iam_role.Node_Role.name
 }
 
-resource "aws_iam_role_policy_attachment" "node_role-AmazonEC2ContainerRegistryReadOnlyy" {
+resource "aws_iam_role_policy_attachment" "Node_Role-AmazonEC2ContainerRegistryReadOnlyy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  role     = aws_iam_role.node_role.name
+  role     = aws_iam_role.Node_Role.name
 }
 
-resource "aws_iam_role_policy_attachment" "node_role-AmazonSSMManagedInstanceCore" {
+resource "aws_iam_role_policy_attachment" "Node_Role-AmazonSSMManagedInstanceCore" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-  role     = aws_iam_role.node_role.name
+  role     = aws_iam_role.Node_Role.name
 }
 
 # Create Node Group
-resource "aws_eks_node_group" "worker_nodes_group" {
-  cluster_name    = aws_eks_cluster.cluster.name
-  node_group_name = "${var.cluster_name}-worker-nodes-group"
-  node_role_arn   = aws_iam_role.node_role.arn
-  subnet_ids      = [aws_subnet.subnet_a.id, aws_subnet.subnet_b.id]
+resource "aws_eks_node_group" "Worker_Nodes_Group" {
+  cluster_name    = aws_eks_cluster.Cluster.name
+  node_group_name = "Worker_Nodes_Group"
+  node_role_arn   = aws_iam_role.Node_Role.arn
+  subnet_ids      = [aws_subnet.Private_A.id, aws_subnet.Private_B.id]
 
   scaling_config {
-    desired_size = var.scaling-desired_nodes
-    max_size     = var.scaling-max_nodes
-    min_size     = var.scaling-desired_nodes
+    desired_size = var.Scaling-Desired_Nodes
+    max_size     = var.Scaling-Max_Nodes
+    min_size     = var.Scaling-Desired_Nodes
   }
 
-  instance_types = ["t3.medium"]
+  launch_template {
+    name    = aws_launch_template.EKS_Node_Template.name
+    version = aws_launch_template.EKS_Node_Template.latest_version
+  }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.Node_Role-AmazonEKSWorkerNodePolicy,
+    aws_iam_role_policy_attachment.Node_Role-AmazonEKSCNIPolicy,
+    aws_iam_role_policy_attachment.Node_Role-AmazonEC2ContainerRegistryReadOnlyy,
+  ]
 }
 
+# Launch Template for EKS Nodes
+resource "aws_launch_template" "EKS_Node_Template" {
+  name          = var.EKS_Template_Name
+  instance_type = var.Instance_type
+}
 
-# MongoDB (Using DocumentDB)
-resource "aws_docdb_cluster" "mongodb" {
-  cluster_identifier = var.mongodb_cluster_identifier
-  master_username    = var.mongodb_master_username
-  master_password    = var.mongodb_master_password
+#---------------DB---------------
+
+# Create MongoDB (Using DocumentDB)
+resource "aws_docdb_cluster" "MongoDB_Cluster" {
+  cluster_identifier = var.MongoDB_Cluster_Identifier
+  master_username    = var.MongoDB_Master_Username
+  master_password    = var.MongoDB_Master_Password
   engine             = "docdb"
+  
+  skip_final_snapshot = true # ******************************************************* DELETE IN PROD ***********
 
   tags = {
-    Name = "pacman-mongodb-cluster"
+    Name = "PacMan_MongoDB_Cluster"
   }
 }
 
-resource "aws_docdb_instance" "mongodb_instance" {
+resource "aws_docdb_cluster_instance" "MongoDB_Cluster_Instance" {
   count            = 2
-  cluster_id       = aws_docdb_cluster.mongodb.id
+  cluster_identifier = aws_docdb_cluster.MongoDB_Cluster.id
   instance_class   = "db.r5.large"
   engine           = "docdb"
 }

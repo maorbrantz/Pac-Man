@@ -1,4 +1,4 @@
-# outputs.tf
+# Outputs
 output "eks_cluster_endpoint" {
   description = "The endpoint of the EKS cluster"
   value       = aws_eks_cluster.cluster.endpoint
@@ -6,5 +6,5 @@ output "eks_cluster_endpoint" {
 
 output "mongodb_endpoint" {
   description = "The endpoint of the MongoDB cluster"
-  value       = aws_docdb_cluster.mongodb.endpoint
+  value       = aws_docdb_cluster.mongodb_cluster.endpoint
 }

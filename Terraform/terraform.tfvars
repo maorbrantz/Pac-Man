@@ -1,6 +1,5 @@
-#TF File for Variables Values
-region                       = "us-west-2"
-cluster_name                 = "pacman-cluster"
-mongodb_cluster_identifier   = "pacman-docdb-cluster"
-mongodb_master_username      = "admin"
-mongodb_master_password      = "I1!k2@E3#a4$"
+
+# MongoDB Variables:
+MongoDB_Cluster_Identifier   = "pacman-docdb-cluster"
+MongoDB_Master_Username      = "db_admin"
+MongoDB_Master_Password      = "47mqU:&JWZa.7mN0c$"
