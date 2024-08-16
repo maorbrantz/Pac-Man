@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pacman-app
+  name: pacman-app-deployment
 spec:
   replicas: 2
   selector:
@@ -14,9 +14,9 @@ spec:
     spec:
       containers:
         - name: pacman-app-container
-          image: pacman-app-image:latest
+          image: public.ecr.aws/w9x4f4k1/pacman_project:latest
           ports:
-            - containerPort: 5000
+            - containerPort: 8080
           env:
             - name: ENV
               value: "DEV"
