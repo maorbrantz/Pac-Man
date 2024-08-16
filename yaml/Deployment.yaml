@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pacman-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pacman-app
+  template:
+    metadata:
+      labels:
+        app: pacman-app
+    spec:
+      containers:
+        - name: pacman-app-container
+          image: pacman-app-image:latest
+          ports:
+            - containerPort: 5000
+          env:
+            - name: ENV
+              value: "DEV"
