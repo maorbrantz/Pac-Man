@@ -1,12 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: pacman-app-service
+  name: pacman-service
 spec:
-  selector:
-    app: pacman-app
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 8080
   type: LoadBalancer
+  ports:
+    - port: 80
+      targetPort: 8080
+  selector:
+    app: pacman

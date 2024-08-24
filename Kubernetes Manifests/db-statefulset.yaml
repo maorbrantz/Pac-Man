@@ -1,22 +1,49 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: pacman-app-deployment
+  name: mongodb
 spec:
-  replicas: 2
+  serviceName: "mongodb-service"
+  replicas: 1
   selector:
     matchLabels:
-      app: pacman-app
+      app: mongodb
   template:
     metadata:
       labels:
-        app: pacman-app
+        app: mongodb
     spec:
       containers:
-        - name: pacman-app-container
-          image: public.ecr.aws/w9x4f4k1/pacman_project:latest
+        - name: mongodb
+          image: mongo:latest
           ports:
-            - containerPort: 8080
+            - containerPort: 27017
           env:
-            - name: ENV
-              value: "DEV"
+            - name: MONGO_INITDB_ROOT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret
+                  key: mongo-root-username
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret
+                  key: mongo-root-password
+          volumeMounts:
+            - name: mongo-data
+              mountPath: /data/db
+            - name: config-volume
+              mountPath: /etc/mongodb
+              subPath: mongodb.conf
+      volumes:
+        - name: config-volume
+          configMap:
+            name: mongodb-config
+  volumeClaimTemplates:
+    - metadata:
+        name: mongo-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi

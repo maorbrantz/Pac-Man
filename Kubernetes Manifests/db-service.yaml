@@ -1,12 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: pacman-app-service
+  name: mongodb-service
+  labels:
+    app: mongodb
 spec:
-  selector:
-    app: pacman-app
   ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 8080
-  type: LoadBalancer
+    - port: 27017
+      targetPort: 27017
+  clusterIP: None  # This makes the service headless
+  selector:
+    app: mongodb
