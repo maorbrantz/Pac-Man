@@ -282,26 +282,3 @@ resource "aws_launch_template" "EKS_Node_Template" {
   name          = var.EKS_Template_Name
   instance_type = var.Instance_type
 }
-
-#---------------DB---------------
-
-# Create MongoDB (Using DocumentDB)
-resource "aws_docdb_cluster" "MongoDB_Cluster" {
-  cluster_identifier = var.MongoDB_Cluster_Identifier
-  master_username    = var.MongoDB_Master_Username
-  master_password    = var.MongoDB_Master_Password
-  engine             = "docdb"
-  
-  skip_final_snapshot = true # ******************************************************* DELETE IN PROD ***********
-
-  tags = {
-    Name = "PacMan_MongoDB_Cluster"
-  }
-}
-
-resource "aws_docdb_cluster_instance" "MongoDB_Cluster_Instance" {
-  count            = 2
-  cluster_identifier = aws_docdb_cluster.MongoDB_Cluster.id
-  instance_class   = "db.r5.large"
-  engine           = "docdb"
-}

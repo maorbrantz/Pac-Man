@@ -76,21 +76,3 @@ variable "EKS_Template_Name" {
   type        = string
   default     = "EKS-NG-Template"
 }
-
-
-#---------------DB---------------
-variable "MongoDB_Cluster_Identifier" {
-  description = "Identifier for the MongoDB cluster"
-  type        = string
-}
-
-variable "MongoDB_Master_Username" {
-  description = "Master username for MongoDB"
-  type        = string
-}
-
-variable "MongoDB_Master_Password" {
-  description = "Master password for MongoDB"
-  type        = string
-  sensitive   = true
-}
