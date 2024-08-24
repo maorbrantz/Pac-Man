@@ -3,7 +3,10 @@
 # Created by Maor Brantz
 #-----------------------------------
 
-
+# Providers
+provider "aws" {
+  region = var.Region
+}
 
 #--------------- VPC ---------------
 
