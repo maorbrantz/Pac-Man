@@ -19,4 +19,4 @@ spec:
             - containerPort: 8080
           env:
             - name: MONGO_URL  # WORK ON THAT
-              value: "mongodb://admin:password123@mongodb-service:27017"  # WORK ON THAT
+              value: "mongodb://admin:password@mongodb-service:27017"  # WORK ON THAT
