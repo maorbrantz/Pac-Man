@@ -68,7 +68,7 @@ variable "Scaling-Max_Nodes" {
 variable "Instance_type" {
   description = "Default Instance Type for Nodes"
   type        = string
-  default     = "t3.small"
+  default     = "t3.medium"
 }
 
 variable "EKS_Template_Name" {
@@ -76,3 +76,6 @@ variable "EKS_Template_Name" {
   type        = string
   default     = "EKS-NG-Template"
 }
+
+
+
