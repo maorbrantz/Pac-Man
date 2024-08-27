@@ -14,9 +14,10 @@ spec:
     spec:
       containers:
         - name: pacman
-          image: your-docker-repo/pacman:latest   # WORK ON THAT  
+          image: 891377313726.dkr.ecr.us-west-2.amazonaws.com/pacman-repo/pacman:latest   # Check option for automize
           ports:
             - containerPort: 8080
           env:
             - name: MONGO_URL  # WORK ON THAT
               value: "mongodb://admin:password@mongodb-service:27017"  # WORK ON THAT
+

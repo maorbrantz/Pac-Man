@@ -6,6 +6,7 @@
 # Providers
 provider "aws" {
   region = var.Region
+  profile = var.Profile
 }
 
 #--------------- VPC ---------------
@@ -176,6 +177,13 @@ resource "aws_route_table_association" "Route_Table_Private_B" {
   route_table_id = aws_route_table.Private_Route_Table_B.id
 }
 
+#---------------ECR---------------
+
+# Create ECR Repository
+# resource "aws_ecr_repository" "PacMan_Repository" {
+#  name = "pacman-repo"
+# }
+
 #---------------EKS---------------
 
 # IAM Role for EKS
@@ -261,6 +269,7 @@ resource "aws_eks_node_group" "Worker_Nodes_Group" {
   node_group_name = "Worker_Nodes_Group"
   node_role_arn   = aws_iam_role.Node_Role.arn
   subnet_ids      = [aws_subnet.Private_A.id, aws_subnet.Private_B.id]
+  capacity_type = "ON_DEMAND"
 
   scaling_config {
     desired_size = var.Scaling-Desired_Nodes

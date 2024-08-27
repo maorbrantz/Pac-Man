@@ -35,10 +35,6 @@ spec:
             - name: config-volume
               mountPath: /etc/mongodb
               subPath: mongodb.conf
-      volumes:
-        - name: config-volume
-          configMap:
-            name: mongodb-config
   volumeClaimTemplates:
     - metadata:
         name: mongo-data
@@ -46,4 +42,9 @@ spec:
         accessModes: ["ReadWriteOnce"]
         resources:
           requests:
-            storage: 1Gi
+            storage: 5Gi
+        storageClassName: "gp2"
+  volumes:
+    - name: config-volume
+      configMap:
+        name: mongodb-config
