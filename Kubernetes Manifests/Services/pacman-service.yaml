@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pacman-service
+  labels:
+    app: pacman
+spec:
+  type: LoadBalancer
+  selector:
+    app: pacman
+  ports:
+    - protocol: TCP
+      port: 80  # External Port
+      targetPort: 8080  # Internal Port (Inside the app)

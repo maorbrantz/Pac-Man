@@ -8,7 +8,7 @@ variable "Region" {
 variable "Profile" {
   description = "AWS CLI profile to use"
   type        = string
-  default     = "analiza"
+  default     = "default"
 }
 
 variable "Environment" {

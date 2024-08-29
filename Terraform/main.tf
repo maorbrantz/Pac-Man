@@ -177,13 +177,6 @@ resource "aws_route_table_association" "Route_Table_Private_B" {
   route_table_id = aws_route_table.Private_Route_Table_B.id
 }
 
-#---------------ECR---------------
-
-# Create ECR Repository
-# resource "aws_ecr_repository" "PacMan_Repository" {
-#  name = "pacman-repo"
-# }
-
 #---------------EKS---------------
 
 # IAM Role for EKS
@@ -226,7 +219,7 @@ resource "aws_eks_cluster" "Cluster" {
 
 # IAM Role for Nodes
 resource "aws_iam_role" "Node_Role" {
-  name = "eks-node-role"
+  name = "EKS_Node_Group_Role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -258,8 +251,8 @@ resource "aws_iam_role_policy_attachment" "Node_Role-AmazonEC2ContainerRegistryR
   role     = aws_iam_role.Node_Role.name
 }
 
-resource "aws_iam_role_policy_attachment" "Node_Role-AmazonSSMManagedInstanceCore" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+resource "aws_iam_role_policy_attachment" "Node_Role-AmazonEBSCSIDriverPolicy" {
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
   role     = aws_iam_role.Node_Role.name
 }
 
@@ -286,7 +279,9 @@ resource "aws_eks_node_group" "Worker_Nodes_Group" {
     aws_iam_role_policy_attachment.Node_Role-AmazonEKSWorkerNodePolicy,
     aws_iam_role_policy_attachment.Node_Role-AmazonEKSCNIPolicy,
     aws_iam_role_policy_attachment.Node_Role-AmazonEC2ContainerRegistryReadOnlyy,
+    aws_iam_role_policy_attachment.Node_Role-AmazonEBSCSIDriverPolicy,
   ]
+  
 }
 
 # Launch Template for EKS Nodes
