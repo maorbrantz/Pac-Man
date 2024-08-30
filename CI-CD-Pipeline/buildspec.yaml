@@ -2,15 +2,18 @@ version: 0.2
 
 phases:
   install:
+    runtime-versions:
+      docker: 18
+  pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/w9x4f4k1
+      - aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 448049820504.dkr.ecr.us-west-2.amazonaws.com
   build:
     commands:
       - echo Building the Docker image...
-      - docker build -f Source/docker/Dockerfile -t pacman_project .
-      - docker tag pacman_project:latest public.ecr.aws/w9x4f4k1/pacman_project:latest
+      - docker build -t pacman-app .
+      - docker tag pacman-app:latest 448049820504.dkr.ecr.us-west-2.amazonaws.com/pacman-repo:latest
   post_build:
     commands:
-      - echo Pushing the Docker image to ECR...
-      - docker push public.ecr.aws/w9x4f4k1/pacman_project:latest
+      - echo Pushing the Docker image...
+      - docker push 448049820504.dkr.ecr.us-west-2.amazonaws.com/pacman-repo:latest
