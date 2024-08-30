@@ -3,14 +3,14 @@ version: 0.2
 phases:
   pre_build:
     commands:
-      - echo Logging in to Amazon ECR...
+      - echo Logging in to Amazon ECR..
       - aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 448049820504.dkr.ecr.us-west-2.amazonaws.com
   build:
     commands:
-      - echo Building the Docker image...
+      - echo Building the Docker image..
       - docker build -t pacman-app .
       - docker tag pacman-app:latest 448049820504.dkr.ecr.us-west-2.amazonaws.com/pacman-repo:latest
   post_build:
     commands:
-      - echo Pushing the Docker image...
+      - echo Pushing the Docker image..
       - docker push 448049820504.dkr.ecr.us-west-2.amazonaws.com/pacman-repo:latest
