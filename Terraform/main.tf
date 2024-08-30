@@ -217,7 +217,7 @@ resource "aws_eks_cluster" "Cluster" {
   ]
 }
 
-# IAM Role for Nodes
+# Create Role for Nodes
 resource "aws_iam_role" "Node_Role" {
   name = "EKS_Node_Group_Role"
 
@@ -235,7 +235,7 @@ resource "aws_iam_role" "Node_Role" {
   })
 }
 
-# Add Policy to IAM Role for Nodes
+# Attach Policies to IAM Role for Nodes
 resource "aws_iam_role_policy_attachment" "Node_Role-AmazonEKSWorkerNodePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
   role     = aws_iam_role.Node_Role.name
@@ -288,4 +288,58 @@ resource "aws_eks_node_group" "Worker_Nodes_Group" {
 resource "aws_launch_template" "EKS_Node_Template" {
   name          = var.EKS_Template_Name
   instance_type = var.Instance_type
+}
+
+# Install EBS CSI Driver
+provider "helm" {
+  kubernetes {
+    config_path = "~/.kube/config"
+  }
+}
+
+resource "helm_release" "aws_ebs_csi_driver" {
+  name       = "aws-ebs-csi-driver"
+  repository = "https://kubernetes-sigs.github.io/aws-ebs-csi-driver"
+  chart      = "aws-ebs-csi-driver"
+  version    = "2.7.0"
+  namespace  = "kube-system"
+
+  set {
+    name  = "controller.serviceAccount.create"
+    value = "true"
+  }
+
+  set {
+    name  = "controller.serviceAccount.name"
+    value = "ebs-csi-controller-sa"
+  }
+
+  set {
+    name  = "node.serviceAccount.create"
+    value = "true"
+  }
+
+  set {
+    name  = "node.serviceAccount.name"
+    value = "ebs-csi-node-sa"
+  }
+
+  set {
+    name  = "enableVolumeResizing"
+    value = "true"
+  }
+
+  set {
+    name  = "region"
+    value = var.Region
+  }
+
+  set {
+    name  = "image.repository"
+    value = "602401143452.dkr.ecr.us-west-2.amazonaws.com/eks/aws-ebs-csi-driver"
+  }
+
+  depends_on = [
+    aws_eks_cluster.Cluster
+  ]
 }

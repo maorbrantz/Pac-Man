@@ -13,7 +13,6 @@ spec:
       labels:
         app: mongodb
     spec:
-      serviceAccountName: ebs-csi-controller-sa
       containers:
         - name: mongodb
           image: mongo:latest
@@ -48,4 +47,3 @@ spec:
         resources:
           requests:
             storage: 5Gi
-        storageClassName: gp2
