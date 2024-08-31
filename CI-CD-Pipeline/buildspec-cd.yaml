@@ -14,14 +14,14 @@ phases:
   build:
     commands:
       - echo Applying Kubernetes manifests...
-      - kubectl apply -f Secrets/mongodb-secrets.yaml
-      - kubectl apply -f Configmaps/mongodb-configmap.yaml
-      - kubectl apply -f Storage-Classes/gp2-storage-class.yaml
-      - kubectl apply -f Service-Accounts/ebs-csi-controller-sa.yaml
-      - kubectl apply -f Deployments/mongodb-deployment.yaml
-      - kubectl apply -f Services/mongodb-service.yaml
-      - kubectl apply -f Deployments/pacman-deployment.yaml
-      - kubectl apply -f Services/pacman-service.yaml
+      - kubectl apply -f Kubernetes Manifests/Secrets/mongodb-secrets.yaml
+      - kubectl apply -f Kubernetes Manifests/Configmaps/mongodb-configmap.yaml
+      - kubectl apply -f Kubernetes Manifests/Storage-Classes/gp2-storage-class.yaml
+      - kubectl apply -f Kubernetes Manifests/Service-Accounts/ebs-csi-controller-sa.yaml
+      - kubectl apply -f Kubernetes Manifests/Deployments/mongodb-deployment.yaml
+      - kubectl apply -f Kubernetes Manifests/Services/mongodb-service.yaml
+      - kubectl apply -f Kubernetes Manifests/Deployments/pacman-deployment.yaml
+      - kubectl apply -f Kubernetes Manifests/Services/pacman-service.yaml
   post_build:
     commands:
       - echo Deployment completed successfully!
