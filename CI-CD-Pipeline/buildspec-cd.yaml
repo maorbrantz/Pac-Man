@@ -13,7 +13,7 @@ phases:
       - aws eks update-kubeconfig --region us-west-2 --name PacMan-Cluster
   build:
     commands:
-      - echo Applying Kubernetes manifests...
+      - echo Applying Kubernetes manifests..
       - kubectl apply -f Kubernetes Manifests/Secrets/mongodb-secrets.yaml
       - kubectl apply -f Kubernetes Manifests/Configmaps/mongodb-configmap.yaml
       - kubectl apply -f Kubernetes Manifests/Storage-Classes/gp2-storage-class.yaml
