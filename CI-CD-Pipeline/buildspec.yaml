@@ -14,3 +14,16 @@ phases:
     commands:
       - echo Pushing the Docker image...
       - docker push 448049820504.dkr.ecr.us-west-2.amazonaws.com/pacman-repo:latest
+  deploy:
+    commands:
+      - echo Getting kubeconfig for EKS cluster...
+      - aws eks --region us-west-2 update-kubeconfig --name PacMan-Cluster
+      - echo Deploying to EKS...
+      - kubectl apply -f Secrets/mongodb-secrets.yaml
+      - kubectl apply -f Configmaps/mongodb-configmap.yaml
+      - kubectl apply -f Storage-Classes/gp2-storage-class.yaml 
+      - kubectl apply -f Service-Accounts/ebs-csi-controller-sa.yaml
+      - kubectl apply -f Deployments/mongodb-deployment.yaml
+      - kubectl apply -f Services/mongodb-service.yaml
+      - kubectl apply -f Deployments/pacman-deployment.yaml
+      - kubectl apply -f Services/pacman-service.yaml
