@@ -14,14 +14,14 @@ phases:
   build:
     commands:
       - echo Applying Kubernetes manifests...
-      - kubectl apply -f Kubernetes-Manifests/Secrets/mongodb-secrets.yaml
-      - kubectl apply -f Kubernetes-Manifests/Configmaps/mongodb-configmap.yaml
-      - kubectl apply -f Kubernetes-Manifests/Storage-Classes/gp2-storage-class.yaml
-      - kubectl apply -f Kubernetes-Manifests/Service-Accounts/ebs-csi-controller-sa.yaml
-      - kubectl apply -f Kubernetes-Manifests/Deployments/mongodb-deployment.yaml
-      - kubectl apply -f Kubernetes-Manifests/Services/mongodb-service.yaml
-      - kubectl apply -f Kubernetes-Manifests/Deployments/pacman-deployment.yaml
-      - kubectl apply -f Kubernetes-Manifests/Services/pacman-service.yaml
+      - kubectl apply -f Kubernetes-Manifests/Secrets/mongodb-secrets.yaml --validate=false
+      - kubectl apply -f Kubernetes-Manifests/Configmaps/mongodb-configmap.yaml --validate=false
+      - kubectl apply -f Kubernetes-Manifests/Storage-Classes/gp2-storage-class.yaml --validate=false
+      - kubectl apply -f Kubernetes-Manifests/Service-Accounts/ebs-csi-controller-sa.yaml --validate=false
+      - kubectl apply -f Kubernetes-Manifests/Deployments/mongodb-deployment.yaml --validate=false
+      - kubectl apply -f Kubernetes-Manifests/Services/mongodb-service.yaml --validate=false
+      - kubectl apply -f Kubernetes-Manifests/Deployments/pacman-deployment.yaml --validate=false
+      - kubectl apply -f Kubernetes-Manifests/Services/pacman-service.yaml --validate=false
   post_build:
     commands:
       - echo Deployment completed successfully!
