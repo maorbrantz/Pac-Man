@@ -1,4 +1,4 @@
-# EKS CI/CD Pipeline - Final Project [PAC-MAN Game]
+# EKS CI/CD Pipeline - Final Project [Pac-Man Game]
 
 ## Introduction
 
@@ -6,8 +6,8 @@ This project implements the classic **Pac-Man** game as a microservice architect
 
 ## Application Components
 
-- **PACMAN APP**: A Node.js-based front-end for the Pac-Man game.
-- **DATABASE**: MongoDB for game data persistence, deployed using a Kubernetes StatefulSet with persistent storage.
+- **Pac-Man App**: A Node.js-based front-end for the Pac-Man game.
+- **Database**: MongoDB for game data persistence, deployed using a Kubernetes StatefulSet with persistent storage.
 
 ## Architecture Overview
 
@@ -60,27 +60,24 @@ The complete project can be found in the following structure:
 ├── Diagrams/
 ```
 
-source_code/: Contains the source code for the Pac-Man application.
-terraform_modules/: Contains all Terraform configuration files to provision AWS resources.
-kubernetes_manifests/: Kubernetes manifests for deploying the Pac-Man app and MongoDB.
-ci_cd_pipeline/: Contains the configuration files for AWS CodePipeline and CodeBuild.
-monitoring_setup/: Optional configuration for Prometheus and Grafana.
-screenshots/: Contains screenshots of the running application, CI/CD pipeline, and monitoring dashboards.
-diagram/: Architecture and CI/CD pipeline diagrams.
+- Source: Contains the source code for the Pac-Man application.
+- Terraform: Contains all Terraform configuration files to provision AWS resources.
+- Kubernetes-Manifests: Kubernetes manifests for deploying the Pac-Man app and MongoDB.
+- CI-CD-Pipeline: Contains the configuration files for AWS CodePipeline and CodeBuild.
+- Screenshots: Contains screenshots of the running application, CI/CD pipeline, and monitoring dashboards.
+- Diagrams: Architecture and CI/CD pipeline diagrams.
 
 ## Screenshots
 
 **Pac-Man Application:**
-[Complete Later]
+- [Complete Later]
 
 **CI/CD Pipeline:**
-[Complete Later]
+- [Complete Later]
 
 **Grafana Monitoring Dashboard:**
-[Complete Later]
+- [Complete Later]
 
 ## Conclusion
 
 This project successfully implements a Pac-Man game using microservices architecture on Amazon EKS, with automated CI/CD pipeline management and persistent database storage. The project showcases modern DevOps practices, including Infrastructure as Code (IaC) with Terraform, Kubernetes for container orchestration, and AWS services for scalability, high availability, and monitoring.
-
-go
