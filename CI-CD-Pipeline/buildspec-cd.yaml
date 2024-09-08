@@ -15,7 +15,7 @@ phases:
     commands:
       - echo Applying Kubernetes manifests...
       - kubectl apply -f Kubernetes-Manifests/Secrets/mongodb-secrets.yaml 
-      - kubectl apply -f Kubernetes-Manifests/Configmaps/mongodb-configmap.yaml 
+      - kubectl apply -f Kubernetes-Manifests/Configmaps/mongodb-configmap.yaml  
       - kubectl apply -f Kubernetes-Manifests/Storage-Classes/gp2-storage-class.yaml 
       - kubectl apply -f Kubernetes-Manifests/Service-Accounts/ebs-csi-controller-sa.yaml 
       - kubectl apply -f Kubernetes-Manifests/Deployments/mongodb-deployment.yaml 

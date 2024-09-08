@@ -33,7 +33,7 @@ spec:
             - name: mongo-data
               mountPath: /data/db
             - name: config-volume
-              mountPath: /etc/mongodb
+              mountPath: /etc/mongodb.conf
               subPath: mongodb.conf
       volumes:
         - name: config-volume
