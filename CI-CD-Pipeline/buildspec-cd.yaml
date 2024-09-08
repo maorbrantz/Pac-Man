@@ -14,6 +14,11 @@ phases:
     commands:
       - echo Logging in to Amazon EKS...
       - aws eks update-kubeconfig --name PacMan-Cluster --region us-west-2
+      - echo Checking kubeconfig...
+      - cat ~/.kube/config
+      - echo Checking aws eks cluster info...
+      - aws eks describe-cluster --name PacMan-Cluster --region us-west-2
+
   build:
     commands:
       - echo Check1..
