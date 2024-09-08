@@ -43,7 +43,7 @@ The architecture is designed to use **Amazon Web Services (AWS)** for a highly a
 ### 5. **Stateful Database Deployment**
    - The MongoDB database is deployed with a **StatefulSet**, ensuring data persistence across pod restarts. Storage is handled by **Persistent Volumes** backed by AWS **EBS**.
 
-### 6. **Monitoring with Grafana and Prometheus** (Optional)
+### 6. **Monitoring with Grafana and Prometheus**
    - **Prometheus** was used to collect Kubernetes metrics.
    - **Grafana** provided a dashboard for real-time monitoring of cluster utilization, including CPU, memory, and storage usage.
 
