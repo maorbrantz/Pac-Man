@@ -13,9 +13,9 @@ phases:
       - aws eks update-kubeconfig --region us-west-2 --name PacMan-Cluster
   build:
     commands:
-      - echo Check1...
+      - echo Check1 (Updating kubeconfig)..
       - aws eks update-kubeconfig --name PacMan-Cluster --region us-west-2
-      - echo Check2...
+      - echo Check2 (Get Nodes)..
       - kubectl get nodes
       - echo Applying Kubernetes manifests...
       - kubectl apply -f Kubernetes-Manifests/Secrets/mongodb-secrets.yaml 
